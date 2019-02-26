@@ -3,12 +3,7 @@
 ## Installation
 Install package
 ```bash
-pip install git+https://github.com/phvan2312/MNIST_RNET.git
-```
-
-Set up model path
-```bash
-export MNIST_MODEL_PATH='./MNIST_saved_model.t7'
+pip install git+ssh://git@github.com/phvan2312/MNIST_RNET.git
 ```
 
 ## Usage
