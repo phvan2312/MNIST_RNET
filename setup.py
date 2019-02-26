@@ -6,7 +6,7 @@ setup(name='MNIST_RNET',
       description='Numbers + Yen sign classification .',
       version='0.1.0',
 
-      packages=setuptools.find_packages(),
+      packages=['mnist_rnet','mnist_rnet.models'],
       install_requires=requirements,
       include_package_data=True,
       zip_safe=False)
