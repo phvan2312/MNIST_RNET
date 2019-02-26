@@ -1,13 +1,19 @@
+import sys
+import mnist_rnet
+import os
+
+_dir = os.path.dirname(mnist_rnet.__file__)
+sys.path.append(_dir)
+
 import torch
 import torch.nn.functional as F
 from PIL import Image
 from torchvision.transforms import Compose, ToTensor, Normalize, Resize, Pad
-import os
+
 
 # save_3/49
-
 try:
-    save_path = os.environ['MNIST_MODEL_PATH']
+    save_path = os.path.join(_dir, "MNIST_saved_model.t7")
     print ("Initialized from", save_path)
 except KeyError:
     raise ValueError("Please set MNIST_MODEL_PATH environment varible to saved onmt model path, example:\
@@ -27,7 +33,6 @@ valid_data_transform = Compose([
     Pad(padding=(15,15,15,15),fill=255),
     Resize((36, 36)),
     ToTensor(),
-    #Normalize((0.129,), (0.3,))
 ])
 
 def normalize_label(int_predicted):
