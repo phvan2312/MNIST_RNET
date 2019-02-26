@@ -1,0 +1,11 @@
+.idea/*
+__pycache__/*
+data/*
+models/*
+inference.sh
+log.txt
+pred.json
+processed/*
+raw/*
+*.xlsx
+save/*
