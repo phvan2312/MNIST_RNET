@@ -39,18 +39,21 @@ def normalize_label(int_predicted):
         return str(int_predicted)
 
 def predict(img_fn, bias_to_yen = False):
-    image = Image.open(img_fn).convert('L')
+    if type(img_fn) is str:
+        image = Image.open(img_fn).convert('L')
+    else:
+        image = Image.fromarray(img_fn).convert('L')
+    
     transformed_image = valid_data_transform(image)
-    transformed_image = torch.unsqueeze(transformed_image, dim = 0)
+    transformed_image = torch.unsqueeze(transformed_image, dim=0)
 
     outputs = model(transformed_image)
 
-    if bias_to_yen:#"_0" in img_fn and '05_' in img_fn:
+    if bias_to_yen:  # "_0" in img_fn and '05_' in img_fn:
         outputs[-1][10] += outputs.std()
 
-    #outputs = F.softmax(outputs,dim=-1)
+    # outputs = F.softmax(outputs,dim=-1)
     probability, predicted_classes = torch.max(outputs, 1)
-
 
     # convert to numpy
     probability = probability.numpy()[0]
