@@ -10,6 +10,7 @@ import torch.nn.functional as F
 from PIL import Image
 from torchvision.transforms import Compose, ToTensor, Normalize, Resize, Pad
 
+
 # save_3/49
 try:
     save_path = os.path.join(_dir, "model_ep_78.t7")
@@ -122,8 +123,8 @@ def predict_from_folder(folder_name, output_excel_fn = "./report_2.xlsx",
     return _table_pred
 
 if __name__ == "__main__":
-    #print (predict(img_fn='/home/vanph/Desktop/debug2/05_Img00048_0.png'))
-    #exit()
+    print (predict(img_fn='/home/vanph/Desktop/debug2/05_Img00048_0.png'))
+    exit()
 
     _table_pred =  predict_from_folder(folder_name="/home/vanph/Desktop/debug2")
 
