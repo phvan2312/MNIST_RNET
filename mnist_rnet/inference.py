@@ -10,16 +10,13 @@ import torch.nn.functional as F
 from PIL import Image
 from torchvision.transforms import Compose, ToTensor, Normalize, Resize, Pad
 
-
 # save_3/49
 try:
-    save_path = os.path.join(_dir, "MNIST_saved_model.t7")
+    save_path = os.path.join(_dir, "model_ep_78.t7")
     print ("Initialized from", save_path)
 except KeyError:
     raise ValueError("Please set MNIST_MODEL_PATH environment varible to saved onmt model path, example:\
             export MNIST_MODEL_PATH='models/onmt/demo-model_step_989120.pt'")
-
-#save_path = "./save/save_3/model_ep_49.t7"
 
 # restore model
 model = torch.load(save_path)
