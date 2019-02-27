@@ -1,1 +1,2 @@
 include mnist_rnet/MNIST_saved_model.t7
+include mnist_rnet/model_ep_78.t7
