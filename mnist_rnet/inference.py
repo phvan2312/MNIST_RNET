@@ -22,7 +22,7 @@ except KeyError:
 # restore model
 # model = torch.load(save_path)
 model = MnistResNet()
-model.load_state_dict(torch.load(save_path))
+model.load_state_dict(torch.load(save_path, map_location='cpu'))
 
 model.to(torch.device('cpu'))
 torch.set_grad_enabled(False)
