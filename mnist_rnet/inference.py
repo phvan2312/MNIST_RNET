@@ -52,20 +52,21 @@ def predict(img_fn, bias_to_yen=False):
 
     transformed_image = valid_data_transform(image)
     transformed_image = torch.unsqueeze(transformed_image, dim=0)
+    
+    with torch.no_grad():
+        outputs = model(transformed_image)
 
-    outputs = model(transformed_image)
+        if bias_to_yen:  # "_0" in img_fn and '05_' in img_fn:
+            outputs[-1][10] += outputs.std()
 
-    if bias_to_yen:  # "_0" in img_fn and '05_' in img_fn:
-        outputs[-1][10] += outputs.std()
+        # outputs = F.softmax(outputs,dim=-1)
+        probability, predicted_classes = torch.max(outputs, 1)
 
-    # outputs = F.softmax(outputs,dim=-1)
-    probability, predicted_classes = torch.max(outputs, 1)
+        # convert to numpy
+        probability = probability.numpy()[0]
+        predicted_classes = predicted_classes.numpy()[0]
 
-    # convert to numpy
-    probability = probability.numpy()[0]
-    predicted_classes = predicted_classes.numpy()[0]
-
-    return normalize_label(predicted_classes), probability
+        return normalize_label(predicted_classes), probability
 
 
 import xlsxwriter, glob
