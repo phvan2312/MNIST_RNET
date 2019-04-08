@@ -22,7 +22,7 @@ except KeyError:
 # restore model
 # model = torch.load(save_path)
 model = MnistResNet()
-model.load_state_dict(torch.load(save_path))
+model.load_state_dict(torch.load(save_path, map_location='cpu'))
 
 model.to(torch.device('cpu'))
 torch.set_grad_enabled(False)
@@ -82,6 +82,9 @@ def predict(img_fn, bias_to_yen=False):
 
     transformed_image = valid_data_transform(image)
     transformed_image = torch.unsqueeze(transformed_image, dim=0)
+    
+    with torch.no_grad():
+        outputs = model(transformed_image)
 
     with torch.no_grad():
         outputs = model(transformed_image)
