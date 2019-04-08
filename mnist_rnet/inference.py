@@ -13,7 +13,7 @@ from mnist_rnet.models.model import MnistResNet
 
 # save_3/49
 try:
-    save_path = os.path.join(_dir, "_model_ep_78.t7")
+    save_path = os.path.join(_dir, "_model_ep_32_08042018.t7")
     print("Initialized from", save_path)
 except KeyError:
     raise ValueError("Please set MNIST_MODEL_PATH environment varible to saved onmt model path, example:\
@@ -28,10 +28,40 @@ model.to(torch.device('cpu'))
 torch.set_grad_enabled(False)
 model.eval()
 
+import numpy as np
+from PIL import Image
+def find_nearest_bound(img):
+    img = np.array(img)
+
+    try:
+        # binarize
+        THRESHOLD = 200
+
+        img[img < THRESHOLD] = 0
+        img[img >= THRESHOLD] = 255
+
+        img = 255 - img
+        img_by_row = np.sum(img, axis=1)  # (row,)
+        img_by_col = np.sum(img, axis=0)  # (col,)
+
+        ids_row = sorted(np.where(img_by_row != 0)[0])  # find the first black pixels (row by row)
+        ids_col = sorted(np.where(img_by_col != 0)[0])  # find the first black pixels (col by col)
+
+        print(ids_row[0], ids_row[-1], ids_col[0], ids_col[-1], img.shape)
+
+        img = img[ids_row[0]:ids_row[-1], ids_col[0]:ids_col[-1]]
+
+        img = 255 - img
+    except:
+        print('Fail to find the nearest bounding box, return raw ...')
+        pass
+
+    return Image.fromarray(img)
+
 # transformations
 valid_data_transform = Compose([
-    # RandomAffine(degrees=6, translate=(0.15, 0.15)),
-    Pad(padding=(15, 15, 15, 15), fill=255),
+    find_nearest_bound,
+    Pad(padding=(10, 10, 10, 10), fill=255),
     Resize((36, 36)),
     ToTensor(),
 ])
@@ -53,19 +83,20 @@ def predict(img_fn, bias_to_yen=False):
     transformed_image = valid_data_transform(image)
     transformed_image = torch.unsqueeze(transformed_image, dim=0)
 
-    outputs = model(transformed_image)
+    with torch.no_grad():
+        outputs = model(transformed_image)
 
-    if bias_to_yen:  # "_0" in img_fn and '05_' in img_fn:
-        outputs[-1][10] += outputs.std()
+        if bias_to_yen:  # "_0" in img_fn and '05_' in img_fn:
+            outputs[-1][10] += outputs.std()
 
-    # outputs = F.softmax(outputs,dim=-1)
-    probability, predicted_classes = torch.max(outputs, 1)
+        # outputs = F.softmax(outputs,dim=-1)
+        probability, predicted_classes = torch.max(outputs, 1)
 
-    # convert to numpy
-    probability = probability.numpy()[0]
-    predicted_classes = predicted_classes.numpy()[0]
+        # convert to numpy
+        probability = probability.numpy()[0]
+        predicted_classes = predicted_classes.numpy()[0]
 
-    return normalize_label(predicted_classes), probability
+        return normalize_label(predicted_classes), probability
 
 
 import xlsxwriter, glob
@@ -82,7 +113,6 @@ def _update_table_dct_v1(table, image_fn, value):
         table[_key] += [(_image_fn, value)]
     else:
         table[_key] = [(_image_fn, value)]
-
 
 def predict_from_folder(folder_name, output_excel_fn="./report_2.xlsx",
                         labels_fn="/home/vanph/Desktop/up/flax_prod_ffg/kan_test_2/_debug02/_labels.json"):
@@ -133,10 +163,9 @@ def predict_from_folder(folder_name, output_excel_fn="./report_2.xlsx",
 
     return _table_pred
 
-
 if __name__ == "__main__":
-    # print (predict(img_fn='/home/vanph/Desktop/debug2/05_Img00048_0.png'))
-    # exit()
+    print (predict(img_fn='/home/vanph/Downloads/F0-11-000163-000001.C01-04.jpg/1_05_account_number_0.png'))
+    exit()
 
     _table_pred = predict_from_folder(folder_name="/home/vanph/Desktop/debug2")
 

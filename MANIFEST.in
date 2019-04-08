@@ -1,1 +1,2 @@
 include mnist_rnet/_model_ep_78.t7
+include mnist_rnet/_model_ep_32_08042018.t7
